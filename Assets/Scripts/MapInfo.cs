@@ -28,6 +28,43 @@ public class MapInfo : MonoBehaviour
     [SerializeField] private List<Unit> _enemyUnits = new List<Unit>();
     [SerializeField] private List<Unit> _playerUnits = new List<Unit>();
 
+    private void Start()
+    {
+        Unit[] units = FindObjectsOfType<Unit>();
+
+        foreach (Unit unit in units)
+        {
+            if (unit.isEnemy)
+            {
+                if (_enemyUnits.Contains(unit) == false)
+                    _enemyUnits.Add(unit);
+            }
+            else
+            {
+                if(_playerUnits.Contains(unit) == false)
+                    _playerUnits.Add(unit);
+            }
+        }
+    }
+
+    public void DeleteFromLists(IHealth towerOrEnemy)
+    {
+        switch (towerOrEnemy)
+        {
+            case Tower tower:
+                if (_enemyTowers.Remove(tower)) return;
+                if (_playerTowers.Remove(tower)) return;
+                break;
+            case Unit unit:
+                if (_enemyUnits.Remove(unit)) return;
+                if (_playerUnits.Remove(unit)) return;
+                break;
+            default:
+                Debug.LogWarning("MapInfo: неизвестный тип объекта");
+                break;
+        }
+    }
+
     public bool TryGetNearestUnit(in Vector3 currentPosition, bool enemy, out Unit unit, out float distance)
     {
         List<Unit> units = enemy ? _enemyUnits : _playerUnits;
